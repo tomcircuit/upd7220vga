@@ -1,0 +1,97 @@
+    Name          640x480p60
+    Standard      Historical
+    VIC                    1
+    Short Name       DMT0659
+    Aspect Ratio         4:3
+
+    Pixel Clock       25.175 MHz
+    Pixel Time          39.7 ns ±0.5%
+    Horizontal Freq.  31.469 kHz
+    Line Time           31.8 µs
+    Vertical Freq.    59.940 Hz
+    Frame Time          16.7 ms
+
+    Horizontal Timings (in pixels)
+    Active Pixels        640
+    Front Porch           16
+    Sync Width            96
+    Back Porch            48
+    Blanking Total       160
+    Total Pixels         800
+    Sync Polarity        neg
+
+    Vertical Timings (in lines)
+    Active Lines         480
+    Front Porch           10
+    Sync Width             2
+    Back Porch            33
+    Blanking Total        45
+    Total Lines          525
+    Sync Polarity        neg
+
+    Active Pixels    307,200 
+    Data Rate           0.60 Gbps
+
+    Frame Memory (Kbits)
+     8-bit Memory      2,400
+    12-bit Memory      3,600
+    24-bit Memory      7,200
+    32-bit Memory      9,600
+    
+
+7220A-8 timing (assuming XTAL of
+Step 1
+        AP=640          AP (active pixels) must be multiple of 32 (640/32=20) 
+        AL=480          AL must be integer
+        AL=DL           (non-interlaced)
+Step 2
+        tVB = 3.83us    (96 pixel clocks)
+        tHB = 63.6us    (2 scanlines)
+        fHORIZ = 31.469kHz    
+
+        
+
+    
+
+
+    Name          800x600p60
+    Standard        VESA DMT
+    VIC                  N/A
+    Short Name           N/A
+    Aspect Ratio         4:3
+
+    Pixel Clock       40.000 MHz
+    TMDS Clock       400.000 MHz
+    Pixel Time          25.0 ns ±0.5%
+    Horizontal Freq.  37.897 kHz
+    Line Time           26.4 µs
+    Vertical Freq.    60.317 Hz
+    Frame Time          16.6 ms
+
+    Horizontal Timings
+    Active Pixels        800
+    Front Porch           40
+    Sync Width           128 
+    Back Porch            88
+    Blanking Total       256
+    Total Pixels        1056
+    Sync Polarity        pos
+
+    Vertical Timings
+    Active Lines         600
+    Front Porch            1
+    Sync Width             4
+    Back Porch            23
+    Blanking Total        28
+    Total Lines          628
+    Sync Polarity        pos
+
+    Active Pixels    480,000
+    Data Rate           0.90 Gbps
+
+    Frame Memory (Kbits)
+     8-bit Memory      3,750
+    12-bit Memory      5,625
+    24-bit Memory     11,250
+    32-bit Memory     15,000
+    
