@@ -1,7 +1,6 @@
 -- 1FF and 8FF and 16FF with load enable
--- 2Series Flip Flop with 2nd stage enable
 -- UPD7220 GDP-VGA 
--- January 29, 2021   
+-- February 10, 2021   
 -- T. LeMense
 -- CC BY SA 4.0
 
@@ -106,36 +105,4 @@ begin
             end if;
         end if;
     end process;
-end arch;
-
--- ser2ff; two series flip flops with clock enable on second stage.
--- This is intended to be used for the signals that are latched on 
--- falling edges of ALE and HSYNC. Concept: u0 samples the signal
--- on every rising clock edge. u1 captures u0 output on a rising
--- clock edge when ld is asserted. This avoids any chance of
--- setup or hold issues.
-entity ser2ff is port(
-    d   : IN STD_LOGIC;
-    ld  : IN STD_LOGIC;  -- u1 enable.
-    clr : IN STD_LOGIC;  -- async. clear.
-    clk : IN STD_LOGIC;  -- clock.
-    q   : OUT STD_LOGIC  -- output captured from previous clock, updated this clock
-         );
-end ser2ff;
-
-architecture arch of ser2ff is
-signal q0 : STD_LOGIC;
-
-begin         
-    u0 : reg1 port map (clk => clk,
-                        d => d,
-                        clr => clr,
-                        ld => '1',
-                        q => q0);
-                           
-    u1 : reg1 port map (clk => clk,
-                        d => q0,
-                        clr => clr,
-                        ld => ld,
-                        q => q);
 end arch;

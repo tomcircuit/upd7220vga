@@ -180,7 +180,8 @@ begin
       sync     => open                      -- already have this, too
    ); 
 
-   linectr0 : line_counter port map (       -- Glyph line counter (up to 15 lines/glyph)
+   -- Glyph line counter (up to 15 lines/glyph)
+   linectr0 : line_counter port map (       
       enab     => f_hsync,                  -- count/clear pulse active 2 clk periods after HSYNC falls
       sclr     => l_clrlc,                  -- clear enable delayed 1 clk period after HSYNC falls
       clk      => clk50,                    -- master clock
@@ -188,7 +189,8 @@ begin
       line     => l_count                   -- line counter output 0 (top row)...15 (bottom row)
    );
    
-   data0 : datapath port map (              -- SRAM/GDP datapath
+   -- SRAM-GDP address and datapath and config registers
+   data0 : datapath port map (              
       ad_bus    => ad_bus,                  -- addr/data bus from GDP and external SRAM
       mux_sel   => samux_sel,               -- SRAM addr MUX control (latched GDP addr, glyph addr, config addr)
       l_count   => l_count,                 -- Glyph line counter (up to 15 lines/glyph)
@@ -206,6 +208,18 @@ begin
       cfg3_data => cfg3_data                -- config3 register contents
    );
    
+   -- Pull configuration values from CFG1 and CFG0 registers:
+   --
+   --       +------+------+------+------+--------------+---------------+
+   -- CFG1  | ZOOM | HPOL | VPOL | TEST | POINT RRGGBB | CANVAS RRGGBB |
+   --       +------+------+------+------+--------------+---------------+   
+   --
+   --       +-----------------+---------------+--------------+
+   -- CFG0  | GLYPH BANK (4B) | CURSOR RRGGBB | FRAME RRGGBB |
+   --       +-----------------+---------------+--------------+   
+   --
+   -- CFG2 and CFG3 are not used at this point in time
+   --
    attr_blink <= pixel_word(15);            -- pull character blinking from attribute byte
    attr_canvas <= pixel_word(14 downto 12); -- pull background RGB code from attribute byte
    attr_point <= pixel_word(11 downto 8);   -- pull foreground IRGB code from attribute byte
@@ -218,8 +232,9 @@ begin
    -- cfg0_data(15 downto 12) are GLYPH TABLE BANK and handled within datapath
    cfg_cursor <= cfg0_data(11 downto 6);    -- pull CHAR CURSOR color from CFG0(11:6)
    cfg_frame <= cfg0_data(5 downto 0);      -- pull FRAME color from CFG0(5:0)
-   
-   mem0 : memory_fsm port map (             -- SRAM memory controller FSM
+
+   -- SRAM memory controller FSM   
+   mem0 : memory_fsm port map (             
       clk       => clk50,                   -- master clock
       s_ale     => s_ale,                   -- synchronized ALE input
       s_dbin    => s_dbin_l,                -- synchronized DBIN_L input
@@ -238,18 +253,20 @@ begin
       gdpbuf_l  => gdpbuf_l                 -- GDP translator buffer enable (active low)
    );
    
-   
+   -- Convert CHAR foreground IRGB attribute to RRGGBB
    irgb0 : irgb_convert port map (
       irgb_i   => attr_point,               -- glyph foreground IRGB from attribute 
       rgb_o    => v_glpoint                 -- map to GLYPH POINT RRGGBB color
    );
    
+   -- Convert CHAR background RGB attribute to RRGGBB   
    rgb0 : rgb_convert port map (
       rgb_i    => attr_canvas,              -- glyph background RGB from attribute 
       rgb_o    => v_glcanvas                -- map to GLYPH CANVAS RRGGBB color
    );
 
-   cmux0 : color_mux port map (             -- INACTIVE PIXEL color mux
+   -- INACTIVE PIXEL color mux (RRGGBB for '0' pixels during this D-cycle)
+   cmux0 : color_mux port map (             
       glyph    => v_glcanvas,               -- GLYPH canvas (background) color
       apa      => v_canvas,                 -- APA canvas (background) color
       cursor   => v_cursor,                 -- cursor color
@@ -260,7 +277,8 @@ begin
       color    => v_inactive                -- RRGGBB color value to use for INACTIVE pixels
     );
 
-   cmux1 : color_mux port map (             -- ACTIVE PIXEL color mux                     
+   -- ACTIVE PIXEL color mux (RRGGBB for '1' pixels during this D-cycle)                    
+   cmux1 : color_mux port map (             
       glyph    => v_glpoint,                -- GLYPH point (foreground) color              
       apa      => v_point,                  -- APA point (foreground) color                
       cursor   => v_cursor,                 -- cursor color                                 
@@ -271,7 +289,8 @@ begin
       color    => v_active                  -- RRGGBB color value to use for ACTIVE pixels
    );
    
-   psr0 : pixel_shift port map (            -- pixel shift register
+   -- pixel 16-bit parallel-input serial-output shift register (parallel load each P-cycle)  
+   psr0 : pixel_shift port map (            
       d        => pixel_word,               -- parallel 16bit input
       load     => pload,                    -- synchronous load enable (overrides shift)
       shift    => pshift,                   -- synchronous shift enable
@@ -279,7 +298,8 @@ begin
       q0       => raw_pixel                 -- single pixel output 1/0 from APA or GLYPH SRAM
    );
    
-   pgate0 : pixel_gate port map (           -- pixel gate unit
+   -- pixel gate unit (clear pixel when blanking or cursor or blinking occur during P-cycle)
+   pgate0 : pixel_gate port map (           
       d        => raw_pixel,                -- single pixel from APA or GLYPH SRAM
       blank    => c_blank,                  -- blanking input (valid for this D cycle)
       image    => l_image,                  -- image input (valid for this H line)
@@ -290,7 +310,8 @@ begin
       q        => pixel                     -- raw_pixel input AND'd with stored gate (realtime)
    );
 
-   pmux : pixel_mux port map (              -- registered pixel mux
+   -- pixel color mux with registered inputs (so colors stay consistent during P-cycle)
+   pmux : pixel_mux port map (              
       acolor   => v_active,                 -- RRGGBB output from ACTIVE color mux
       icolor   => v_inactive,               -- RRGGBB output from INACTIVE color mux
       pixel    => pixel,                    -- gated pixel input
@@ -302,7 +323,8 @@ begin
    p_hsync <= c_hsync xor (not cfg_hpol);   -- adjust HSYNC polarity (cfg_hpol = 0 --> invert HSYNC)
    p_vsync <= c_vsync xor (not cfg_vpol);   -- adjust VSYNC polarity (cfg_vpol = 0 --> invert VSYNC)
    
-   hsync1 : reg1 port map (                 -- align HSYNC signal with PLOAD
+   -- align HSYNC signal with PLOAD (to keep HSYNC consistent during P-cycle)  
+   hsync1 : reg1 port map (                 
       d        => p_hsync,                  -- HSYNC captured at falling edge of ALE
       ld       => pload,                    -- pixel path load enable
       clk      => clk50,                    -- master clock
@@ -310,7 +332,8 @@ begin
       q        => hsync_o                   -- aligned HSYNC signal (data to external D-FF)
    );
    
-   vsync1 : reg1 port map (                 -- align VSYNC signal with PLOAD
+   -- align VSYNC signal with PLOAD (to keep VSYNC consistent during P-cycle)  
+   vsync1 : reg1 port map (                 
       d        => p_vsync,                  -- VSYNC captured at falling edge of ALE
       ld       => pload,                    -- pixel path load enable
       clk      => clk50,                    -- master clock
@@ -318,21 +341,23 @@ begin
       q        => vsync_o                   -- aligned VSYNC signal (data to external D-FF)
    );
 
-   -- drive address and control outputs to SRAM (memory FSM drives some directly)
+   -- drive outputs
+
+   -- SRAM address and control signals (memory FSM drives some directly, also)
    ram_addr_o <= ram_addr;                  -- drive SRAM address output pins
    ram_lb_l <= '0';                         -- SRAM low byte enable (active low)
    ram_hb_l <= '0';                         -- SRAM high byte enable (active low)
 
-   -- drive clock output to GDP
+   -- GDP W2xCLK clock 
    w2clk_o <= w2clk;                        -- drive W2xCLK output to GDP
    
-   -- drive video outputs
+   -- RGB outputs
    pclk_o <= pclk;                          -- drive pclk output (clock to external D-FF)
    red_o <= v_pixel(5 downto 4);            -- 2-bit red output (data to external D-FF)
    green_o <= v_pixel (3 downto 2);         -- 2-bit green output (data to external D-FF)
    blue_o <= v_pixel (1 downto 0);          -- 2-bit green output (data to external D-FF)
    
-   -- drive debug outputs
+   -- DEBUG outputs
    debug_o <= pload & raw_pixel & l_clrlc & f_hsync & l_count(3 downto 0);
 
 end arch;
