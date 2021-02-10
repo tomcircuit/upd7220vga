@@ -1,5 +1,5 @@
 -- UPD7220 GDP-VGA pixel gating logic
--- February 1, 2021   
+-- February 9, 2021   
 -- T. LeMense
 -- CC BY SA 4.0
 
@@ -19,14 +19,19 @@ entity pixel_gate is port(
 end pixel_gate;
 
 architecture arch of pixel_gate is
+signal
+   gate : std_logic;        -- gate control signal latched at same time as pixel shift reg
 begin
-   process(clk)
+   load_gate : process(clk)
    begin
       if rising_edge(clk) then
          if ld = '1' then
-            q <= '0' when ( blank or ((not image) and (not blink) and battr) ) else d;
+            gate <= '0' when ( blank or ((not image) and (not blink) and battr) ) else 1;
          end if;                          
        end if;
-   end process;
+   end process load_gate;
+   
+   q <= d and gate;
+   
 end arch;
 

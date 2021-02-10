@@ -3,8 +3,7 @@
 -- T. LeMense
 -- CC BY SA 4.0
 
--- PIXEL MUX is simply a 2-input MUX with 6-bit registered
--- inputs. 
+-- PIXEL MUX is 6-bit wide 2:1 MUX with registered inputs. 
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -24,8 +23,7 @@ signal
       areg : std_logic_vector(5 downto 0);
       ireg : std_logic_vector(5 downto 0);
 begin
-
-   process(clk)
+   rclk : process(clk)
    begin
       if rising_edge(clk) then
          if ld = '1' then
@@ -33,7 +31,7 @@ begin
             ireg <= icolor;
          end if;
       end if;
-   end process;
+   end process rclk;
 
    with pixel select
       q <= areg when '1',

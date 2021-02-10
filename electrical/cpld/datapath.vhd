@@ -19,11 +19,10 @@ entity sram_addr_mux is port(
 end sram_addr_mux;
 
 architecture dataflow of sram_addr_mux is
-   constant CFG_ADDR_PREFIX : std_logic_vector("11111111111111");
 begin
    with sel select
       q <= gbank & glyph & line when "01",          -- address into glyph table
-           CFG_ADDR_PREFIX & gdpad(1 downto 0) when "10",  -- 0xFFFx config address (FFFC,FFFD,FFFE,FFFF)
+           "11111111111111" & gdpad(1 downto 0) when "10",  -- 0xFFFx config address (FFFC,FFFD,FFFE,FFFF)
            gdpad when others;                       -- latched GDP address otherwise
 end dataflow;
 

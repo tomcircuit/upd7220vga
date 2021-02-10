@@ -23,7 +23,7 @@ entity memory_state_machine is
       ld_msb   : out  std_logic;            -- SRAM MSB register clock enable (D8-D15 from SRAM)      
       ld_lsb   : out  std_logic;            -- SRAM LSB register clock enable (D7-D0 from SRAM)
       ld_conf  : out  std_logic;            -- CFGx register clock enable
-      load_inh : out  std_logic;            -- inhibit loading of pixel shift reg on CLK #11
+      pload_en : out  std_logic;            -- allow loading of pixel shift reg on CLK50 edge
       ram_cs_l : out  std_logic;            -- SRAM output enable (active low)
       ram_oe_l : out  std_logic;            -- SRAM output enable (active low)
       ram_we_l : out  std_logic;            -- SRAM write enable (active low)
@@ -140,7 +140,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '1';    -- disable SRAM chip
@@ -151,7 +151,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '1';    -- LOAD GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip            
@@ -162,7 +162,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -173,7 +173,7 @@ begin
             msb_ld <= '1';      -- LOAD msb data reg (APA pixels, CHAR attr)
             lsb_ld <= '1';      -- LOAD lsb data reg (APA pixels, CHAR glyph number)
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -184,7 +184,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -195,7 +195,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -206,7 +206,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '1';      -- LOAD lsb data reg (glyph pixels)
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -218,7 +218,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -229,7 +229,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -240,7 +240,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '0';     -- INHIBIT pixel SR load
+            pload_en <= '0';    -- INHIBIT pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '1';    -- disable SRAM chip                        
@@ -252,7 +252,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '0';     -- INHIBIT pixel SR load
+            pload_en <= '0';    -- INHIBIT pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -263,7 +263,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -274,7 +274,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -285,7 +285,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -296,7 +296,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '0';    -- ENABLE SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -307,7 +307,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -318,7 +318,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '0';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -329,7 +329,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '0';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -340,7 +340,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '1';     -- allow pixel SR load
+            pload_en <= '1';    -- allow pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '0';    -- disable SRAM write
             ram_cs_l <= '0';    -- ENABLE SRAM chip                        
@@ -352,7 +352,7 @@ begin
             msb_ld <= '0';      -- do not load msb data reg
             lsb_ld <= '0';      -- do not load lsb data reg
             gdpad_ld <= '0';    -- do not load GDP Addr register
-            load_en <= '0';     -- INHIBIT pixel SR load
+            pload_en <= '0';    -- INHIBIT pixel SR load
             ram_oe_l <= '1';    -- disable SRAM data ouputs
             ram_we_l <= '1';    -- disable SRAM write
             ram_cs_l <= '1';    -- disable SRAM chip                        
