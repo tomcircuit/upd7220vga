@@ -1,0 +1,8 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP UPD7220
+D CRT Graphic Display Processor, DIP-40
+K CRT controller
+$ENDCMP
+#
+#End Doc Library
